@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<group android:checkableBehavior="single">
+    <item
+        android:id="@+id/nav_home"
+        android:icon="@drawable/ic_dashboard"
+        android:title="@string/title_browse_by_category"
+        />
+    <item
+        android:id="@+id/nav_time"
+        android:icon="@drawable/ic_event"
+        android:title="@string/title_browse_by_time"
+        />
+    <item
+        android:id="@+id/nav_collect"
+        android:icon="@drawable/ic_forum"
+        android:title="@string/title_my_collect"
+        />
+</group>
+    <item android:title="Other">
+        <menu>
+            <item
+                android:id="@+id/nav_code"
+                android:icon="@drawable/github_logo"
+                android:title="@string/title_sound_code">
+            </item>
+            <item
+                android:id="@+id/nav_author"
+                android:icon="@drawable/ic_forum"
+                android:title="@string/title_about_author"
+                ></item>
+        </menu>
+    </item>
+</menu>
