@@ -1,4 +1,4 @@
-package com.example.xingw.mygankapp.Class;
+package com.example.xingw.mygankapp.Model;
 
 import java.util.ArrayList;
 

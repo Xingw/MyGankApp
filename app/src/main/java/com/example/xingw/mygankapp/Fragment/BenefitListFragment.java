@@ -1,7 +1,7 @@
 package com.example.xingw.mygankapp.Fragment;
 
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
@@ -11,9 +11,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.example.xingw.mygankapp.Class.Goods;
-import com.example.xingw.mygankapp.Class.GoodsResult;
+import com.example.xingw.mygankapp.Adapter.BenefitGoodsItemAdapter;
+import com.example.xingw.mygankapp.Model.Goods;
+import com.example.xingw.mygankapp.Model.GoodsResult;
 import com.example.xingw.mygankapp.Config.Constants;
+import com.example.xingw.mygankapp.Database.Image;
 import com.example.xingw.mygankapp.Network.GankCloudApi;
 import com.example.xingw.mygankapp.R;
 import com.malinskiy.materialicons.IconDrawable;
@@ -25,6 +27,7 @@ import java.util.List;
 import butterknife.Bind;
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
+import io.realm.RealmResults;
 import rx.Observer;
 
 /**
@@ -79,15 +82,39 @@ public class BenefitListFragment extends BaseLoadingFragment implements SwipeRef
         }
     };
 
+    private void refreshBenefitGoods() {
+        mAllbenefitImage.clear();
+        RealmResults<Image> results = mRealm.where(Image.class).notEqualTo("width",0).findAll();
+        mAllbenefitImage.addAll(results);
+        mBenefitItemAdapter.replaceWith(mAllbenefitImage);
+    }
+
+    /**
+     * 分析新数据
+     * @param goodsResult
+     * @return 是否有新数据插入
+     */
     private boolean analysisNewImage(GoodsResult goodsResult) {
         mRealm.beginTransaction();
         if(null != goodsResult && null != goodsResult.getResults()){
             for(Goods goods:goodsResult.getResults())
             {
-                //TODO 
+                Image image = Image.queryImageById(mRealm,goods.getObjectId()); //如果是已有的图片就更新吧
+                if(null == image)image = mRealm.createObject(Image.class);
+                Image.updateDbGoods(image,goods);
             }
+            mRealm.commitTransaction();
+            return true;
         }
+        mRealm.cancelTransaction();
         return false;
+    }
+
+    private void doImproveJob(){
+        bImproveDoing = true;
+        Intent intent = new Intent(getActivity(),ImageImproveService.class);
+        intent.setAction(ImageImproveService.ACTION_IMPROVE_IMAGE);
+        getActivity().startService(intent);
     }
 
     private void showNoDataView(){
@@ -139,7 +166,7 @@ public class BenefitListFragment extends BaseLoadingFragment implements SwipeRef
     }
 
     @Override
-    View onCreateContentView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateContentView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return null;
     }
 

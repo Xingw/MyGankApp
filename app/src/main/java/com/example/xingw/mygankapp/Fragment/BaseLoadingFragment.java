@@ -28,7 +28,7 @@ public abstract class BaseLoadingFragment extends Fragment {
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
-    abstract View onCreateContentView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState);
+    public abstract View onCreateContentView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState);
 
     protected void showLoading() {
         mProgressActivity.showLoading();

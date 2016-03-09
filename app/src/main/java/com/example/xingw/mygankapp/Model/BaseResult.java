@@ -1,4 +1,4 @@
-package com.example.xingw.mygankapp.Class;
+package com.example.xingw.mygankapp.Model;
 
 /**
  * Created by Xingw on 2015/12/1.

@@ -1,4 +1,4 @@
-package com.example.xingw.mygankapp;
+package com.example.xingw.mygankapp.Main;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -12,18 +12,21 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TableLayout;
 import android.widget.Toast;
 
 import com.example.xingw.mygankapp.Adapter.MainFragmentPagerAdapter;
+import com.example.xingw.mygankapp.Model.GoodsResult;
+import com.example.xingw.mygankapp.Fragment.BenefitListFragment;
+import com.example.xingw.mygankapp.R;
+import com.orhanobut.logger.Logger;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.realm.Realm;
-import io.realm.processor.Constants;
+import rx.Observer;
 
 public class MainActivity extends AppCompatActivity {
     @Bind(R.id.toolbar)
@@ -31,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     @Bind(R.id.ly_drawer_layout)
     DrawerLayout mDrawerLayout;
     @Bind(R.id.viewpage)
-   ViewPager mViewPager;
+    ViewPager mViewPager;
     @Bind(R.id.tabs)
     TableLayout mTableLayout;
     @Bind(R.id.nav_view)
@@ -42,6 +45,28 @@ public class MainActivity extends AppCompatActivity {
     private Realm mrealm;
     private MainFragmentPagerAdapter mPagerAdapter;
     private BenefitListFragment mBenefitListFragment;
+
+    /***
+     * 获取福利图的回调接口，拿到数据用来做背景
+     */
+    private Observer<GoodsResult> getImageGoodsObserver = new Observer<GoodsResult>() {
+        @Override
+        public void onCompleted() {
+            Logger.d("获取背景图服务完成");
+        }
+
+        @Override
+        public void onError(Throwable e) {
+           Logger.e(e,"获取背景图服务失败");
+        }
+
+        @Override
+        public void onNext(GoodsResult goodsResult) {
+            if ( null != goodsResult && null != goodsResult.getResults()){
+                ImageGoodsCache.getIns().addAllImageGoods(goodsResult.getResults());
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +83,9 @@ public class MainActivity extends AppCompatActivity {
         setupDrawerContent(mNavigationView);
 
         setupViewPager();
+
+
+
         mFABtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -69,7 +97,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupViewPager() {
-
+        mBenefitListFragment  = new BenefitListFragment();
+        mPagerAdapter = new MainFragmentPagerAdapter(getSupportFragmentManager());
+        mPagerAdapter.addFragment(CommonGoodsListFragment.newFragment("Android"), "Android");
     }
 
     @Override
